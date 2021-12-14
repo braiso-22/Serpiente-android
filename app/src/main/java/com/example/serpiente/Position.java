@@ -9,7 +9,8 @@ public class Position {
         PosX = posX;
         PosY = posY;
     }
-    public Position(Position pos){
+
+    public Position(Position pos) {
         setPos(pos);
     }
 
@@ -33,9 +34,10 @@ public class Position {
         setPosX(x);
         setPosY(y);
     }
-    public void setPos(Position pos){
-        PosX=pos.getPosX();
-        PosY=pos.getPosY();
+
+    public void setPos(Position pos) {
+        PosX = pos.getPosX();
+        PosY = pos.getPosY();
     }
 
     @Override

@@ -46,12 +46,12 @@ public class SnakeEngine extends SurfaceView implements
         while (isPlaying) {
             //va muy rapido, no es jugable
             try {
-                thread.sleep(100);
+                thread.sleep(130);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             update();
-            draw();
+
         }
     }
 
@@ -79,9 +79,9 @@ public class SnakeEngine extends SurfaceView implements
     public void spawnApple() {
         int y, x;
         do {
-            y = (int) (Math.random() * (numBlocksHigh-blockSize));
+            y = (int) (Math.random() * (numBlocksHigh - blockSize));
         } while (y == snake.getPosition().getPosY());
-        x = (int) (Math.random() * (NUM_BLOCKS_WIDE-blockSize));
+        x = (int) (Math.random() * (NUM_BLOCKS_WIDE - blockSize));
         Position pos = new Position(x, y);
         if (apple == null) {
             apple = new Apple(pos);
@@ -94,33 +94,54 @@ public class SnakeEngine extends SurfaceView implements
     }
 
     private void eatApple() {
-
+        if (snake.position.equals(apple.position)) {
+            spawnApple();
+        }
     }
 
     private boolean isSnakeDeath() {
-        return true;
+        Position pos1 = new Position(NUM_BLOCKS_WIDE,numBlocksHigh),
+                pos2 = new Position(0,0);
+
+
+        if(snake.position.getPosX()>=pos1.getPosX()){
+            return true;
+        }
+        if(snake.position.getPosY()>=pos1.getPosY()){
+            return true;
+        }
+        if(snake.position.getPosX()<pos2.getPosX()){
+            return true;
+        }
+        if(snake.position.getPosY()<pos2.getPosY()){
+            return true;
+        }
+        return false;
+
     }
 
     public void update() {
-        if (snake.position.equals( apple.position)) {
-            spawnApple();
+        if (!isSnakeDeath()) {
+            eatApple();
+            switch (snake.getOrientacion()) {
+                case Orientacion.ARRIBA:
+                    snake.position.setPosY(snake.getPosition().getPosY() + 1);
+                    break;
+                case Orientacion.DERECHA:
+                    snake.position.setPosX(snake.getPosition().getPosX() + 1);
+                    break;
+                case Orientacion.ABAJO:
+                    snake.position.setPosY(snake.getPosition().getPosY() - 1);
+                    break;
+                case Orientacion.IZQUIERDA:
+                    snake.position.setPosX(snake.getPosition().getPosX() - 1);
+                    break;
+                default:
+            }
+            draw();
+        }else{
+           drawEnd();
         }
-        switch (snake.getOrientacion()) {
-            case Orientacion.ARRIBA:
-                snake.position.setPosY(snake.getPosition().getPosY() + 1);
-                break;
-            case Orientacion.DERECHA:
-                snake.position.setPosX(snake.getPosition().getPosX() + 1);
-                break;
-            case Orientacion.ABAJO:
-                snake.position.setPosY(snake.getPosition().getPosY() - 1);
-                break;
-            case Orientacion.IZQUIERDA:
-                snake.position.setPosX(snake.getPosition().getPosX() - 1);
-                break;
-            default:
-        }
-
     }
 
     public void draw() {
@@ -138,6 +159,19 @@ public class SnakeEngine extends SurfaceView implements
                     (apple.getPosition().getPosY() * blockSize),
                     ((apple.getPosition().getPosX() * blockSize) + blockSize),
                     ((apple.getPosition().getPosY() * blockSize) + blockSize), paint);
+            surfaceHolder.unlockCanvasAndPost(canvas);
+        }
+    }
+
+    public void drawEnd(){
+        if (surfaceHolder.getSurface().isValid()) {
+            canvas = surfaceHolder.lockCanvas();
+            canvas.drawColor(Color.argb(255, 0, 0, 0));
+            paint.setColor(Color.argb(255, 145, 42, 178));
+            paint.setTextSize(screenX/10);
+            canvas.drawText("💀 💀 💀 💀", screenX/4, screenY/4, paint);
+            canvas.drawText("Bruhhhhhhh", screenX/4, screenY/3, paint);
+
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
