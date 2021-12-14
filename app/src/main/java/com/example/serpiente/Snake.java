@@ -3,18 +3,22 @@ package com.example.serpiente;
 
 import android.graphics.Color;
 
+import java.util.ArrayList;
+
 import afu.org.checkerframework.checker.oigj.qual.O;
 
 public class Snake {
-    Position position ;
+    Position position;
     int orientacion;
     int color;
+    ArrayList<BodyPart> cuerpo;
 
 
     public Snake(Position position) {
         this.position = position;
-        this.color = Color.rgb((int)((Math.random()*100)),(int)((Math.random()*205)+51),(int)((Math.random()*205)+51));
-        orientacion=Orientacion.ARRIBA;
+        this.color = Color.rgb((int) ((Math.random() * 100)), (int) ((Math.random() * 205) + 51), (int) ((Math.random() * 205) + 51));
+        orientacion = Orientacion.ARRIBA;
+        cuerpo = new ArrayList<>();
     }
 
     public Position getPosition() {
@@ -33,18 +37,23 @@ public class Snake {
         this.orientacion = orientacion;
     }
 
-    public void giraDerecha(){
-        if(orientacion!=Orientacion.IZQUIERDA){
+    public void giraDerecha() {
+        if (orientacion != Orientacion.IZQUIERDA) {
             orientacion++;
-        }else{
-            orientacion=Orientacion.ARRIBA;
+        } else {
+            orientacion = Orientacion.ARRIBA;
         }
     }
-    public void giraIzquierda(){
-        if(orientacion!=Orientacion.ARRIBA){
+
+    public void giraIzquierda() {
+        if (orientacion != Orientacion.ARRIBA) {
             orientacion--;
-        }else{
-            orientacion=Orientacion.IZQUIERDA;
+        } else {
+            orientacion = Orientacion.IZQUIERDA;
         }
+    }
+
+    public void addBodyPart(Object o) {
+        cuerpo.add(new BodyPart(o));
     }
 }

@@ -96,13 +96,17 @@ public class SnakeEngine extends SurfaceView implements
     private void eatApple() {
         if (snake.position.equals(apple.position)) {
             spawnApple();
+            if(snake.cuerpo.isEmpty()){
+                snake.addBodyPart(snake);
+            }else{
+                snake.addBodyPart(snake.cuerpo.get(snake.cuerpo.size()-1));
+            }
         }
     }
 
     private boolean isSnakeDeath() {
         Position pos1 = new Position(NUM_BLOCKS_WIDE,numBlocksHigh),
                 pos2 = new Position(0,0);
-
 
         if(snake.position.getPosX()>=pos1.getPosX()){
             return true;
@@ -154,6 +158,13 @@ public class SnakeEngine extends SurfaceView implements
                     (snake.getPosition().getPosX() * blockSize) + blockSize,
                     (snake.getPosition().getPosY() * blockSize) + blockSize,
                     paint);
+            for (BodyPart bp:snake.cuerpo) {
+                canvas.drawRect(bp.getPosition().getPosX() * blockSize,
+                        (bp.getPosition().getPosY() * blockSize),
+                        (bp.getPosition().getPosX() * blockSize) + blockSize,
+                        (bp.getPosition().getPosY() * blockSize) + blockSize,
+                        paint);
+            }
             paint.setColor(apple.getColor());
             canvas.drawRect(apple.getPosition().getPosX() * blockSize,
                     (apple.getPosition().getPosY() * blockSize),
