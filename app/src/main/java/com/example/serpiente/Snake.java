@@ -13,7 +13,7 @@ public class Snake {
 
     public Snake(Position position) {
         this.position = position;
-        this.color = Color.rgb(255,0,0);
+        this.color = Color.rgb((int)((Math.random()*100)),(int)((Math.random()*205)+51),(int)((Math.random()*205)+51));
         orientacion=Orientacion.ARRIBA;
     }
 

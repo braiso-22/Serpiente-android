@@ -8,7 +8,7 @@ public class Apple {
 
     public Apple(Position position) {
         this.position = position;
-        this.color = Color.rgb(0,(int)((Math.random()*205)+51),(int)((Math.random()*205)+51));
+        this.color = Color.rgb(255,(int)((Math.random()*205)+51),0);
     }
 
     public Position getPosition() {

@@ -79,9 +79,9 @@ public class SnakeEngine extends SurfaceView implements
     public void spawnApple() {
         int y, x;
         do {
-            y = (int) (Math.random() * numBlocksHigh);
+            y = (int) (Math.random() * (numBlocksHigh-blockSize));
         } while (y == snake.getPosition().getPosY());
-        x = (int) (Math.random() * NUM_BLOCKS_WIDE);
+        x = (int) (Math.random() * (NUM_BLOCKS_WIDE-blockSize));
         Position pos = new Position(x, y);
         if (apple == null) {
             apple = new Apple(pos);
