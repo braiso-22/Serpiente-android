@@ -16,8 +16,7 @@ import android.view.SurfaceView;
 import org.checkerframework.checker.units.qual.A;
 
 
-public class SnakeEngine extends SurfaceView implements
-        Runnable{
+public class SnakeEngine extends SurfaceView implements Runnable {
     private static final int NUM_BLOCKS_WIDE = 40;
     private Thread thread = null;
     private Context context;
@@ -49,14 +48,17 @@ public class SnakeEngine extends SurfaceView implements
 
     @Override
     public void run() {
+        int counter = 0;
         while (isPlaying) {
-            int counter = 0;
             try {
-                if (counter < 10000) {
-                    thread.sleep(130);
-                } else if (counter < 20000) {
+                //velocidad dependiendo de cuanto hayas comido
+                if (snake.cuerpo.isEmpty()) {
+                    thread.sleep(150);
+                } else if (snake.cuerpo.size()<=5) {
+                    thread.sleep(125);
+                } else if (snake.cuerpo.size()<=10) {
                     thread.sleep(100);
-                }else if (counter < 25000) {
+                } else if (snake.cuerpo.size()<=15) {
                     thread.sleep(75);
                 }else{
                     thread.sleep(50);
@@ -66,7 +68,7 @@ public class SnakeEngine extends SurfaceView implements
                 e.printStackTrace();
             }
             update();
-
+            counter++;
         }
     }
 
@@ -96,6 +98,7 @@ public class SnakeEngine extends SurfaceView implements
         do {
             y = (int) (Math.random() * (numBlocksHigh - blockSize));
         } while (y == snake.getPosition().getPosY());
+
         x = (int) (Math.random() * (NUM_BLOCKS_WIDE - blockSize));
         Position pos = new Position(x, y);
         if (apple == null) {
