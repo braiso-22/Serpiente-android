@@ -16,8 +16,10 @@ public class BodyPart {
     }
 
 
+
     public void setPosition(Position position) {
-        this.position = position;
+        Position p = new Position(position);
+        this.position = p;
     }
 
     public void setColor(int color) {
