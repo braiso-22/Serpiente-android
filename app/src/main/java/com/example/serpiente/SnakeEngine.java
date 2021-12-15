@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -27,10 +28,12 @@ public class SnakeEngine extends SurfaceView implements
     private Snake snake;
     private Apple apple;
     private boolean isPlaying;
+    private MediaPlayer mp;
 
     public SnakeEngine(MainActivity mainActivity, Point size) {
         super(mainActivity);
         context = mainActivity;
+        mp =MainActivity.mp;
         screenX = size.x;
         screenY = size.y;
         blockSize = screenX / NUM_BLOCKS_WIDE;
@@ -96,29 +99,34 @@ public class SnakeEngine extends SurfaceView implements
     private void eatApple() {
         if (snake.position.equals(apple.position)) {
             spawnApple();
-            if(snake.cuerpo.isEmpty()){
+            if (snake.cuerpo.isEmpty()) {
                 snake.addBodyPart(snake);
-            }else{
-                snake.addBodyPart(snake.cuerpo.get(snake.cuerpo.size()-1));
+            } else {
+                snake.addBodyPart(snake.cuerpo.get(snake.cuerpo.size() - 1));
             }
         }
     }
 
     private boolean isSnakeDeath() {
-        Position pos1 = new Position(NUM_BLOCKS_WIDE,numBlocksHigh),
-                pos2 = new Position(0,0);
+        Position pos1 = new Position(NUM_BLOCKS_WIDE, numBlocksHigh),
+                pos2 = new Position(0, 0);
 
-        if(snake.position.getPosX()>=pos1.getPosX()){
+        if (snake.position.getPosX() >= pos1.getPosX()) {
             return true;
         }
-        if(snake.position.getPosY()>=pos1.getPosY()){
+        if (snake.position.getPosY() >= pos1.getPosY()) {
             return true;
         }
-        if(snake.position.getPosX()<pos2.getPosX()){
+        if (snake.position.getPosX() < pos2.getPosX()) {
             return true;
         }
-        if(snake.position.getPosY()<pos2.getPosY()){
+        if (snake.position.getPosY() < pos2.getPosY()) {
             return true;
+        }
+        for (BodyPart bp : snake.cuerpo) {
+            if (bp.position.equals(snake.position)) {
+                return true;
+            }
         }
         return false;
 
@@ -127,6 +135,17 @@ public class SnakeEngine extends SurfaceView implements
     public void update() {
         if (!isSnakeDeath()) {
             eatApple();
+            if (!snake.cuerpo.isEmpty()) {
+                BodyPart bp;
+                for (int i = snake.cuerpo.size()-1; i >= 0; i--) {
+                    bp = snake.cuerpo.get(i);
+                    if (i == 0) {
+                        bp.position.setPos(snake.position);
+                    } else {
+                        bp.position.setPos(snake.cuerpo.get(i - 1).position);
+                    }
+                }
+            }
             switch (snake.getOrientacion()) {
                 case Orientacion.ARRIBA:
                     snake.position.setPosY(snake.getPosition().getPosY() + 1);
@@ -142,9 +161,13 @@ public class SnakeEngine extends SurfaceView implements
                     break;
                 default:
             }
+
             draw();
-        }else{
-           drawEnd();
+        } else {
+            mp.stop();
+            MediaPlayer.create(this.getContext(), R.raw.bruh).start();
+            drawEnd();
+            isPlaying=false;
         }
     }
 
@@ -158,7 +181,7 @@ public class SnakeEngine extends SurfaceView implements
                     (snake.getPosition().getPosX() * blockSize) + blockSize,
                     (snake.getPosition().getPosY() * blockSize) + blockSize,
                     paint);
-            for (BodyPart bp:snake.cuerpo) {
+            for (BodyPart bp : snake.cuerpo) {
                 canvas.drawRect(bp.getPosition().getPosX() * blockSize,
                         (bp.getPosition().getPosY() * blockSize),
                         (bp.getPosition().getPosX() * blockSize) + blockSize,
@@ -174,14 +197,14 @@ public class SnakeEngine extends SurfaceView implements
         }
     }
 
-    public void drawEnd(){
+    public void drawEnd() {
         if (surfaceHolder.getSurface().isValid()) {
             canvas = surfaceHolder.lockCanvas();
             canvas.drawColor(Color.argb(255, 0, 0, 0));
             paint.setColor(Color.argb(255, 145, 42, 178));
-            paint.setTextSize(screenX/10);
-            canvas.drawText("💀 💀 💀 💀", screenX/4, screenY/4, paint);
-            canvas.drawText("Bruhhhhhhh", screenX/4, screenY/3, paint);
+            paint.setTextSize(screenX / 10);
+            canvas.drawText("💀 💀 💀 💀", screenX / 4, screenY / 4, paint);
+            canvas.drawText("Bruhhhhhhh", screenX / 4, screenY / 3, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }

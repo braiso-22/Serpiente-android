@@ -10,13 +10,13 @@ import android.view.Display;
 
 public class MainActivity extends AppCompatActivity {
     SnakeEngine snakeEngine;
-    MediaPlayer mp;
+    public static MediaPlayer mp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Display display = getWindowManager().getDefaultDisplay();
         mp = MediaPlayer.create(this, R.raw.musica);
-        //mp.start();
+        mp.start();
         Point size = new Point();
         display.getSize(size);
         snakeEngine = new SnakeEngine(this, size);
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         snakeEngine.resume();
-        //mp.start();
+        mp.start();
     }
 
     @Override
