@@ -7,13 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import org.checkerframework.checker.units.qual.A;
 
 
 public class SnakeEngine extends SurfaceView implements Runnable {
@@ -88,8 +85,10 @@ public class SnakeEngine extends SurfaceView implements Runnable {
     }
 
     public void newGame() {
+        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.snake);
+        Bitmap bm2 = Bitmap.createScaledBitmap(bm, blockSize*2, blockSize*2, false);
         Position pos = new Position(NUM_BLOCKS_WIDE / 2, numBlocksHigh / 2);
-        snake = new Snake(pos);
+        snake = new Snake(pos,bm2);
         spawnApple();
     }
 
@@ -191,21 +190,30 @@ public class SnakeEngine extends SurfaceView implements Runnable {
     public void draw() {
         if (surfaceHolder.getSurface().isValid()) {
             canvas = surfaceHolder.lockCanvas();
-            canvas.drawColor(Color.argb(255, 0, 0, 0));
-            paint.setColor(snake.getColor());
-            canvas.drawRect(snake.getPosition().getPosX() * blockSize,
-                    (snake.getPosition().getPosY() * blockSize),
-                    (snake.getPosition().getPosX() * blockSize) + blockSize,
-                    (snake.getPosition().getPosY() * blockSize) + blockSize,
-                    paint);
+            //color fondo
+            canvas.drawColor(Color.argb(255, 220, 255, 255));
+
+            //manzana
+            canvas.drawBitmap(apple.getSkin(),
+                    apple.getPosition().getPosX() * blockSize,
+                    apple.getPosition().getPosY() * blockSize, paint);
+
+
+            //cuerpo snake
             for (BodyPart bp : snake.cuerpo) {
-                canvas.drawRect(bp.getPosition().getPosX() * blockSize,
-                        (bp.getPosition().getPosY() * blockSize),
+                canvas.drawRect(bp.getPosition().getPosX() * blockSize, bp.getPosition().getPosY() * blockSize,
                         (bp.getPosition().getPosX() * blockSize) + blockSize,
                         (bp.getPosition().getPosY() * blockSize) + blockSize,
                         paint);
             }
-            canvas.drawBitmap(apple.getSkin(), apple.getPosition().getPosX() * blockSize, apple.getPosition().getPosY() * blockSize, paint);
+            //cabeza snake
+            canvas.drawBitmap(snake.getSkin(),
+                    ( snake.getPosition().getPosX()*blockSize)-(blockSize/2),
+                    (snake.getPosition().getPosY()*blockSize)-(blockSize/2),paint);
+
+            paint.setColor(Color.rgb(155,255,23));
+
+            //bloqueo
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
@@ -227,12 +235,16 @@ public class SnakeEngine extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (event.getRawX() < screenX / 2) {
-                snake.giraDerecha();
-            } else {
                 snake.giraIzquierda();
+                snake.giraSkin(-90);
+            } else {
+                snake.giraDerecha();
+                snake.giraSkin(90);
             }
 
         }
         return true;
     }
+
+
 }
