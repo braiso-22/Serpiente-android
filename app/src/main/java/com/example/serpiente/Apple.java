@@ -1,15 +1,21 @@
 package com.example.serpiente;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.Image;
 
 public class Apple {
-    Position position ;
-    int color;
+    Position position;
 
-    public Apple(Position position) {
+    Bitmap skin;
+
+    public Apple(Position position, Bitmap skin) {
         this.position = position;
-        this.color = Color.rgb(255,(int)((Math.random()*205)+51),0);
+        this.skin = skin;
     }
+
 
     public Position getPosition() {
         return position;
@@ -19,11 +25,7 @@ public class Apple {
         this.position = position;
     }
 
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
+    public Bitmap getSkin() {
+        return skin;
     }
 }

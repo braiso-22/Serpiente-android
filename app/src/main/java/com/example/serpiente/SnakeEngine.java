@@ -1,10 +1,13 @@
 package com.example.serpiente;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -14,7 +17,7 @@ import org.checkerframework.checker.units.qual.A;
 
 
 public class SnakeEngine extends SurfaceView implements
-        Runnable, Util {
+        Runnable{
     private static final int NUM_BLOCKS_WIDE = 40;
     private Thread thread = null;
     private Context context;
@@ -33,7 +36,7 @@ public class SnakeEngine extends SurfaceView implements
     public SnakeEngine(MainActivity mainActivity, Point size) {
         super(mainActivity);
         context = mainActivity;
-        mp =MainActivity.mp;
+        mp = MainActivity.mp;
         screenX = size.x;
         screenY = size.y;
         blockSize = screenX / NUM_BLOCKS_WIDE;
@@ -47,9 +50,18 @@ public class SnakeEngine extends SurfaceView implements
     @Override
     public void run() {
         while (isPlaying) {
-            //va muy rapido, no es jugable
+            int counter = 0;
             try {
-                thread.sleep(130);
+                if (counter < 10000) {
+                    thread.sleep(130);
+                } else if (counter < 20000) {
+                    thread.sleep(100);
+                }else if (counter < 25000) {
+                    thread.sleep(75);
+                }else{
+                    thread.sleep(50);
+                }
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -87,7 +99,9 @@ public class SnakeEngine extends SurfaceView implements
         x = (int) (Math.random() * (NUM_BLOCKS_WIDE - blockSize));
         Position pos = new Position(x, y);
         if (apple == null) {
-            apple = new Apple(pos);
+            Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.apple);
+            Bitmap bm2 = Bitmap.createScaledBitmap(bm, blockSize, blockSize, false);
+            apple = new Apple(pos, bm2);
         } else {
             apple.position.setPos(pos);
 
@@ -137,7 +151,7 @@ public class SnakeEngine extends SurfaceView implements
             eatApple();
             if (!snake.cuerpo.isEmpty()) {
                 BodyPart bp;
-                for (int i = snake.cuerpo.size()-1; i >= 0; i--) {
+                for (int i = snake.cuerpo.size() - 1; i >= 0; i--) {
                     bp = snake.cuerpo.get(i);
                     if (i == 0) {
                         bp.position.setPos(snake.position);
@@ -167,7 +181,7 @@ public class SnakeEngine extends SurfaceView implements
             mp.stop();
             MediaPlayer.create(this.getContext(), R.raw.bruh).start();
             drawEnd();
-            isPlaying=false;
+            isPlaying = false;
         }
     }
 
@@ -188,11 +202,7 @@ public class SnakeEngine extends SurfaceView implements
                         (bp.getPosition().getPosY() * blockSize) + blockSize,
                         paint);
             }
-            paint.setColor(apple.getColor());
-            canvas.drawRect(apple.getPosition().getPosX() * blockSize,
-                    (apple.getPosition().getPosY() * blockSize),
-                    ((apple.getPosition().getPosX() * blockSize) + blockSize),
-                    ((apple.getPosition().getPosY() * blockSize) + blockSize), paint);
+            canvas.drawBitmap(apple.getSkin(), apple.getPosition().getPosX() * blockSize, apple.getPosition().getPosY() * blockSize, paint);
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
@@ -201,10 +211,10 @@ public class SnakeEngine extends SurfaceView implements
         if (surfaceHolder.getSurface().isValid()) {
             canvas = surfaceHolder.lockCanvas();
             canvas.drawColor(Color.argb(255, 0, 0, 0));
-            paint.setColor(Color.argb(255, 145, 42, 178));
+            paint.setColor(Color.argb(255, 255, 142, 38));
             paint.setTextSize(screenX / 10);
-            canvas.drawText("💀 💀 💀 💀", screenX / 4, screenY / 4, paint);
-            canvas.drawText("Bruhhhhhhh", screenX / 4, screenY / 3, paint);
+
+            canvas.drawText("Perdiste 💀", screenX / 4, screenY / 3, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
