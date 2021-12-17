@@ -151,17 +151,7 @@ public class SnakeEngine extends SurfaceView implements Runnable {
     public void update() {
         if (!isSnakeDeath()) {
             eatApple();
-            if (!snake.cuerpo.isEmpty()) {
-                BodyPart bp;
-                for (int i = snake.cuerpo.size() - 1; i >= 0; i--) {
-                    bp = snake.cuerpo.get(i);
-                    if (i == 0) {
-                        bp.position.setPos(snake.position);
-                    } else {
-                        bp.position.setPos(snake.cuerpo.get(i - 1).position);
-                    }
-                }
-            }
+            snake.updateBody();
             switch (snake.getOrientacion()) {
                 case Orientacion.ARRIBA:
                     snake.position.setPosY(snake.getPosition().getPosY() + 1);

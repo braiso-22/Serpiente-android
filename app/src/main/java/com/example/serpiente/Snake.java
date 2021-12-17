@@ -2,6 +2,7 @@ package com.example.serpiente;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -43,6 +44,8 @@ public class Snake {
     }
 
     public void giraIzquierda() {
+        //orientacion=(orientacion+1)%4;
+
         if (orientacion != Orientacion.IZQUIERDA) {
             orientacion++;
         } else {
@@ -51,6 +54,10 @@ public class Snake {
     }
 
     public void giraDerecha() {
+
+        //orientacion=(orientacion-1)%4;
+
+
         if (orientacion != Orientacion.ARRIBA) {
             orientacion--;
         } else {
@@ -79,5 +86,18 @@ public class Snake {
                 getSkin().getHeight(), matrix, true);
         setSkin(bm);
 
+    }
+    public void updateBody(){
+        if (!cuerpo.isEmpty()) {
+            BodyPart bp;
+            for (int i = cuerpo.size() - 1; i >= 0; i--) {
+                bp = cuerpo.get(i);
+                if (i == 0) {
+                    bp.position.setPos(position);
+                } else {
+                    bp.position.setPos(cuerpo.get(i - 1).position);
+                }
+            }
+        }
     }
 }
