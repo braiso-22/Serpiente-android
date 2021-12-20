@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         Display display = getWindowManager().getDefaultDisplay();
         mp = MediaPlayer.create(this, R.raw.musica);
         mp.start();
+        mp.setLooping(true);
         Point size = new Point();
         display.getSize(size);
         snakeEngine = new SnakeEngine(this, size);

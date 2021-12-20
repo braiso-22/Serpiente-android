@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 
 public class SnakeEngine extends SurfaceView implements Runnable {
-    private static final int NUM_BLOCKS_WIDE = 40;
+    private static final int NUM_BLOCKS_WIDE = 35;
     private Thread thread = null;
     private Context context;
     private int screenX;
@@ -42,7 +42,7 @@ public class SnakeEngine extends SurfaceView implements Runnable {
         numBlocksHigh = screenY / blockSize;
         surfaceHolder = getHolder();
         paint = new Paint();
-        obstaculos= new ArrayList<>();
+        obstaculos = new ArrayList<>();
         newGame();
     }
 
@@ -61,8 +61,10 @@ public class SnakeEngine extends SurfaceView implements Runnable {
                     thread.sleep(100);
                 } else if (snake.cuerpo.size() <= 15) {
                     thread.sleep(75);
-                } else {
+                } else if (snake.cuerpo.size() <= 25) {
                     thread.sleep(50);
+                } else {
+                    thread.sleep(25);
                 }
 
             } catch (InterruptedException e) {
@@ -118,16 +120,17 @@ public class SnakeEngine extends SurfaceView implements Runnable {
         }
         if (apple == null) {
             Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.apple);
-            Bitmap bm2 = Bitmap.createScaledBitmap(bm, blockSize, blockSize, false);
+            Bitmap bm2 = Bitmap.createScaledBitmap(bm, blockSize * 3 / 2, blockSize * 3 / 2, false);
             apple = new Apple(pos, bm2);
         } else {
             apple.position.setPos(pos);
         }
     }
-    public void spawnObstaculo(){
-        int x,y;
-        boolean noValido=true;
-        Position pos=new Position(0, 0);
+
+    public void spawnObstaculo() {
+        int x, y;
+        boolean noValido = true;
+        Position pos = new Position(0, 0);
         while (noValido) {
             y = (int) (Math.random() * (numBlocksHigh - 10));
             x = (int) (Math.random() * (NUM_BLOCKS_WIDE - 1));
@@ -139,14 +142,14 @@ public class SnakeEngine extends SurfaceView implements Runnable {
                         break;
                     }
                 }
-            }else{
-                noValido=false;
+            } else {
+                noValido = false;
             }
         }
 
         Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.roca);
-        Bitmap bm2 = Bitmap.createScaledBitmap(bm, blockSize, blockSize, false);
-        obstaculos.add(new Obstaculo(pos,bm2));
+        Bitmap bm2 = Bitmap.createScaledBitmap(bm, blockSize * 3 / 2, blockSize * 3 / 2, false);
+        obstaculos.add(new Obstaculo(pos, bm2));
     }
 
     private void eatApple() {
@@ -208,8 +211,10 @@ public class SnakeEngine extends SurfaceView implements Runnable {
             draw();
         } else {
             mp.stop();
-            MediaPlayer.create(this.getContext(), R.raw.bruh).start();
-            drawEnd();
+            mp.reset();
+            mp = MediaPlayer.create(this.getContext(), R.raw.bruh);
+            mp.start();
+            draw();
             isPlaying = false;
         }
     }
@@ -222,16 +227,17 @@ public class SnakeEngine extends SurfaceView implements Runnable {
 
             //manzana
             canvas.drawBitmap(apple.getSkin(),
-                    apple.getPosition().getPosX() * blockSize,
-                    apple.getPosition().getPosY() * blockSize, paint);
+                    apple.getPosition().getPosX() * blockSize - (blockSize / 3),
+                    apple.getPosition().getPosY() * blockSize - (blockSize / 3), paint);
 
             //roca
             canvas.drawBitmap(obstaculos.get(0).getSkin(),
-                    obstaculos.get(0).getPosition().getPosX() * blockSize,
-                    obstaculos.get(0).getPosition().getPosY() * blockSize, paint);
+                    obstaculos.get(0).getPosition().getPosX() * blockSize - (blockSize / 2),
+                    obstaculos.get(0).getPosition().getPosY() * blockSize - (blockSize / 2), paint);
 
 
             //cuerpo snake
+            paint.setColor(Color.rgb(155, 255, 23));
             for (BodyPart bp : snake.cuerpo) {
                 canvas.drawRect(bp.getPosition().getPosX() * blockSize, bp.getPosition().getPosY() * blockSize,
                         (bp.getPosition().getPosX() * blockSize) + blockSize,
@@ -243,22 +249,14 @@ public class SnakeEngine extends SurfaceView implements Runnable {
                     (snake.getPosition().getPosX() * blockSize) - (blockSize / 2),
                     (snake.getPosition().getPosY() * blockSize) - (blockSize / 2), paint);
 
-            paint.setColor(Color.rgb(155, 255, 23));
 
+            if (isSnakeDeath()) {
+                paint.setColor(Color.argb(255, 0, 142, 255));
+                paint.setTextSize(screenX / 10);
+
+                canvas.drawText("Perdiste 💀", screenX / 4, screenY / 3, paint);
+            }
             //bloqueo
-            surfaceHolder.unlockCanvasAndPost(canvas);
-        }
-    }
-
-    public void drawEnd() {
-        if (surfaceHolder.getSurface().isValid()) {
-            canvas = surfaceHolder.lockCanvas();
-            canvas.drawColor(Color.argb(255, 0, 0, 0));
-            paint.setColor(Color.argb(255, 255, 142, 38));
-            paint.setTextSize(screenX / 10);
-
-            canvas.drawText("Perdiste 💀", screenX / 4, screenY / 3, paint);
-
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
@@ -273,8 +271,8 @@ public class SnakeEngine extends SurfaceView implements Runnable {
                 snake.giraDerecha();
                 snake.giraSkin(90);
             }
-
         }
+
         return true;
     }
 
